@@ -49,6 +49,10 @@
                 <button class="record">Record</button>
                 <button class="stop">Stop</button>
               </div>
+              <div id="Modebuttons">
+                <button class="enableMic">Mic Mode</button>
+                <button class="enableSynth">Synth Mode</button>
+              </div>
             </section>
 
             <section class="sound-clips">
@@ -70,6 +74,10 @@
             <button id="install-btn">Install app</button>
           </aside>
 
+          <script src="submono.js"></script>
+          <script src="subpoly.js"></script>
+          <script src="script.js"></script>
+
           <script src="scripts/install.js"></script>
 
           <script src="scripts/mediaDevices-getUserMedia-polyfill.js"></script>
@@ -78,11 +86,8 @@
           <script src="scripts/app.js"></script>
 
 
-  <script src="submono.js"></script>
-  <script src="subpoly.js"></script>
-  <script src="script.js"></script>
 
-
+<!--
       <h1>createMediaStreamDestination() demo</h1>
 
       <p>Encoding a pure sine wave to an Opus file </p>
@@ -104,6 +109,7 @@
        b.addEventListener("click", function(e) {
          if (!clicked) {
              mediaRecorder.start();
+
              //start synth voices here
              osc.start(0);
              e.target.innerHTML = "Stop recording";
@@ -125,7 +131,7 @@
          var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
          document.querySelector("audio").src = URL.createObjectURL(blob);
        };
-      </script>
+      </script> -->
 
 </body>
 </html>

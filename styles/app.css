@@ -35,15 +35,16 @@ canvas {
   margin-bottom: 0.5rem;
 }
 
-#buttons {
+#buttons, #modeButtons {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
-#buttons button {
+#buttons button, #modeButtons button {
   font-size: 1rem;
   padding: 1rem;
+  margin: 0.25rem;
   width: calc(50% - 0.25rem);
 }
 

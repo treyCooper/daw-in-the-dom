@@ -2,10 +2,12 @@
 
 var record = document.querySelector('.record');
 var stop = document.querySelector('.stop');
+var enableMic = document.querySelector('.enableMic');
+var enableSynth = document.querySelector('.enableSynth');
 var soundClips = document.querySelector('.sound-clips');
 var canvas = document.querySelector('.visualizer');
 var mainSection = document.querySelector('.main-controls');
-
+var synthMode = false
 // disable stop button while not recording
 
 stop.disabled = true;
@@ -24,8 +26,36 @@ if (navigator.mediaDevices.getUserMedia) {
   var chunks = [];
 
   var onSuccess = function(stream) {
-    var mediaRecorder = new MediaRecorder(stream);
 
+    enableSynth.onclick = function() {
+      synthMode = true;
+      console.log("synth mode enabled!");
+      enableSynth.style.background = "LimeGreen";
+      enableMic.style.background = "";
+      enableMic.disabled = false;
+      enableSynth.disabled = true;
+
+      var dest = webSynth.audioCtx.createMediaStreamDestination();
+      var mediaRecorder = new MediaRecorder(dest.stream);
+      webSynth.voices.forEach(function(voice){
+        voice.amp.connect(dest);
+      })
+      visualize(dest.stream);
+      // onSuccess(des.stream);
+    }
+
+    enableMic.onclick = function() {
+      synthMode = false;
+      console.log("Mic mode enabled!");
+      enableMic.style.background = "LimeGreen";
+      enableSynth.style.background = "";
+      enableSynth.disabled = false;
+      enableMic.disabled = true;
+      var mediaRecorder = new MediaRecorder(stream);
+      visualize(stream);
+    }
+
+    var mediaRecorder = new MediaRecorder(stream);
     visualize(stream);
 
     record.onclick = function() {
@@ -59,7 +89,7 @@ if (navigator.mediaDevices.getUserMedia) {
       var clipLabel = document.createElement('p');
       var audio = document.createElement('audio');
       var deleteButton = document.createElement('button');
-     
+
       clipContainer.classList.add('clip');
       audio.setAttribute('controls', '');
       deleteButton.textContent = 'Delete';
@@ -148,7 +178,7 @@ function visualize(stream) {
 
 
     for(var i = 0; i < bufferLength; i++) {
- 
+
       var v = dataArray[i] / 128.0;
       var y = v * HEIGHT/2;
 
