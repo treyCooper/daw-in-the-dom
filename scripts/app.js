@@ -7,7 +7,8 @@ var enableSynth = document.querySelector('.enableSynth');
 var soundClips = document.querySelector('.sound-clips');
 var canvas = document.querySelector('.visualizer');
 var mainSection = document.querySelector('.main-controls');
-var synthMode = false
+var synthMode = false;
+var micStream;
 // disable stop button while not recording
 
 stop.disabled = true;
@@ -36,12 +37,11 @@ if (navigator.mediaDevices.getUserMedia) {
       enableSynth.disabled = true;
 
       var dest = webSynth.audioCtx.createMediaStreamDestination();
-      var mediaRecorder = new MediaRecorder(dest.stream);
       webSynth.voices.forEach(function(voice){
         voice.amp.connect(dest);
       })
       visualize(dest.stream);
-      // onSuccess(des.stream);
+      onSuccess(dest.stream);
     }
 
     enableMic.onclick = function() {
@@ -51,8 +51,7 @@ if (navigator.mediaDevices.getUserMedia) {
       enableSynth.style.background = "";
       enableSynth.disabled = false;
       enableMic.disabled = true;
-      var mediaRecorder = new MediaRecorder(stream);
-      visualize(stream);
+      onSuccess(micStream);
     }
 
     var mediaRecorder = new MediaRecorder(stream);
@@ -60,6 +59,7 @@ if (navigator.mediaDevices.getUserMedia) {
 
     record.onclick = function() {
       mediaRecorder.start();
+      console.log("synthMode", synthMode)
       console.log(mediaRecorder.state);
       console.log("recorder started");
       record.style.background = "red";
@@ -138,7 +138,13 @@ if (navigator.mediaDevices.getUserMedia) {
     console.log('The following error occured: ' + err);
   }
 
-  navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
+  navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+    micStream = stream;
+    onSuccess(stream)
+  })
+  .catch(function(err){
+    onError(res)
+  });
 
 } else {
    console.log('getUserMedia not supported on your browser!');
