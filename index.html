@@ -77,8 +77,55 @@
           <!-- Below is your custom application script -->
           <script src="scripts/app.js"></script>
 
-  </body>
+
   <script src="submono.js"></script>
   <script src="subpoly.js"></script>
   <script src="script.js"></script>
+
+
+      <h1>createMediaStreamDestination() demo</h1>
+
+      <p>Encoding a pure sine wave to an Opus file </p>
+      <button>Make sine wave</button>
+      <audio controls></audio>
+      <script>
+       var b = document.querySelector("button");
+       var clicked = false;
+       var chunks = [];
+       console.log('audioCtx', audioCtx)
+      var ac = new AudioContext();
+      var osc = ac.createOscillator();
+      console.log('synth', webSynth)
+       var dest = audioCtx.createMediaStreamDestination();
+       var mediaRecorder = new MediaRecorder(dest.stream);
+       osc.connect(dest);
+       //connect(synthvoices here)
+
+       b.addEventListener("click", function(e) {
+         if (!clicked) {
+             mediaRecorder.start();
+             //start synth voices here
+             osc.start(0);
+             e.target.innerHTML = "Stop recording";
+             clicked = true;
+           } else {
+             mediaRecorder.stop();
+             osc.stop(0);
+             e.target.disabled = true;
+           }
+       });
+
+       mediaRecorder.ondataavailable = function(evt) {
+         // push each chunk (blobs) in an array
+         chunks.push(evt.data);
+       };
+
+       mediaRecorder.onstop = function(evt) {
+         // Make blob out of our blobs, and open it.
+         var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+         document.querySelector("audio").src = URL.createObjectURL(blob);
+       };
+      </script>
+
+</body>
 </html>

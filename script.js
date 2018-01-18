@@ -24,7 +24,7 @@ var webSynth = (function createSynth() {
   };
 
   var polysynth = new Polysynth(audioCtx, synthConfig);
-  
+
   polysynth.decreaseOctave = function decreaseOctave() {
     polysynth.voices.forEach(function(voice) {
       voice.pitch(voice.pitch() / 2);
@@ -36,7 +36,7 @@ var webSynth = (function createSynth() {
       voice.pitch(voice.pitch() * 2);
     });
   };
-  
+
   return polysynth;
 })();
 
@@ -79,7 +79,7 @@ var webSynth = (function createSynth() {
     { char: 'p', keyCode: 80 },
     { char: ';', keyCode: 186 },
     { char: '\'', keyCode: 222 }
-  ]; 
+  ];
 
   function getKeyColor(keyNum) {
     var scaleValue = (keyNum - 4) % 12;
@@ -134,7 +134,7 @@ var webSynth = (function createSynth() {
 
   // allow playing instrument with computer keyboard
   function handleKey(event) {
-    if (event.repeat) { 
+    if (event.repeat) {
       return; // ignore repeat keystrokes when holding down keys
     }
 
@@ -152,7 +152,7 @@ var webSynth = (function createSynth() {
     });
   }
 
-  document.addEventListener('keydown', handleKey); 
+  document.addEventListener('keydown', handleKey);
   document.addEventListener('keyup', handleKey);
 })();
 
@@ -170,3 +170,5 @@ var webSynth = (function createSynth() {
   document.getElementById('cutoffSustainSlider').value = voice.cutoff.sustain;
   document.getElementById('waveformSelect').value = voice.waveform();
 })();
+
+console.log(webSynth)
