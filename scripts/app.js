@@ -119,7 +119,7 @@ if (navigator.mediaDevices.getUserMedia) {
       deleteButton.onclick = function(e) {
         evtTgt = e.target;
         waveArr = waveArr.filter(function(wave) {
-          return +wave.container.id !== +evtTgt.parentNode.lastChild.id;
+          return +wave.container.id !== +evtTgt.parentNode.lastChild.firstChild.id;
         })
         evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
       }
@@ -139,15 +139,23 @@ if (navigator.mediaDevices.getUserMedia) {
       container: waveform,
       fillParent: false
     });
-    clipContainer.appendChild(waveform);
-    console.log(wavesurfer.container.id)
+    var waveformTimeline = document.createElement('div');
+    clipContainer.appendChild(waveformTimeline);
+    waveformTimeline.appendChild(waveform);
   var tracksArr = document.querySelectorAll('audio');
   wavesurfer.load(tracksArr[tracksArr.length-1].src);
     console.log('wavesurfer', wavesurfer, "trackslength", tracksArr.length-1);
   wavesurfer.on('ready', function () {
+    var timeline = Object.create(WaveSurfer.Timeline);
+
+      timeline.init({
+        wavesurfer: wavesurfer,
+        container: waveformTimeline
+      });
     wavesurfer.setMute(true);
     wavesurfer.play();
 
+    console.log('timelime', timeline)
   });
     waveArr.push(wavesurfer);
 
