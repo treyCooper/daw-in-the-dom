@@ -147,7 +147,6 @@ if (navigator.mediaDevices.getUserMedia) {
     console.log('wavesurfer', wavesurfer, "trackslength", tracksArr.length-1);
   wavesurfer.on('ready', function () {
     var timeline = Object.create(WaveSurfer.Timeline);
-
       timeline.init({
         wavesurfer: wavesurfer,
         container: waveformTimeline
@@ -155,7 +154,11 @@ if (navigator.mediaDevices.getUserMedia) {
     wavesurfer.setMute(true);
     wavesurfer.play();
 
-    console.log('timelime', timeline)
+    console.log('timelime', timeline.drawer.wrapper.scrollWidth )
+
+    // //timeline.drawer.width = 2000;
+    // timeline.canvases[0].width = 2000;
+    console.log(timeline.canvases[0].attributes.width, 'test');
   });
     waveArr.push(wavesurfer);
 
@@ -257,3 +260,44 @@ pauseAll.onclick = function() {
     waveArr[i].pause();
   }
 }
+//create a synth and connect it to the master output (your speakers)
+var synth = new Tone.Synth().toMaster();
+Tone.Transport.bpm.value = 270;
+//play a middle 'C' for the duration of an 8th note
+//synth.triggerAttackRelease("D4", "8n");
+// synth.triggerAttackRelease("D4", "8n");
+//play a note every quarter-note
+//var time = 1;
+// var loop = new Tone.Loop(function(time){
+//   synth.triggerAttackRelease("D2", "8n", time);
+// }, "4n");
+
+// loop.start("0m").stop("4m");
+
+var loop1 = new Tone.Loop(function(time){
+  synth.triggerAttackRelease("B4", "16n", time);
+}, "8n");
+loop1.start("5m").stop("5:2:1");
+
+var part = new Tone.Part(function(time, pitch){
+	synth.triggerAttackRelease(pitch, "8n", time);
+}, [["0:0", "C4"], ["0:1", "G3"], ["0:2", "C3"], ["0:3", "G3"], ["0:4", "C3"]]);
+
+part.start("4m");
+
+var part = new Tone.Part(function(time, pitch){
+	synth.triggerAttackRelease(pitch, "8n", time);
+}, [["0:0", "C4"], ["0:1", "G3"], ["0:2", "C3"], ["0:3", "G2"], ["0:4", "C2"]]);
+
+part.start("6m");
+
+//cycle up and then down the array of values
+var arp = new Tone.Pattern(function(time, pitch) {
+  synth.triggerAttackRelease(pitch, "4n", time);
+}, ["C3", "E3", "G3", "B3"], "upDown");
+//callback order: "C3", "E3", "G3", "E3", ...repeat
+
+arp.pattern = "downUp";
+arp.start("1m").stop("4m");
+//callback order: "G3", "E3", "C3", "E3", ...repeat
+Tone.Transport.start();
