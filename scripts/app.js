@@ -7,8 +7,11 @@ var enableSynth = document.querySelector('.enableSynth');
 var soundClips = document.querySelector('.sound-clips');
 var canvas = document.querySelector('.visualizer');
 var mainSection = document.querySelector('.main-controls');
+var playAll = document.querySelector('#playAll');
+var pauseAll = document.querySelector('#pauseAll');
 var synthMode = false;
 var micStream;
+var waveArr = [];
 // disable stop button while not recording
 
 stop.disabled = true;
@@ -115,6 +118,9 @@ if (navigator.mediaDevices.getUserMedia) {
 
       deleteButton.onclick = function(e) {
         evtTgt = e.target;
+        waveArr = waveArr.filter(function(wave) {
+          return +wave.container.id !== +evtTgt.parentNode.lastChild.id;
+        })
         evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
       }
 
@@ -127,6 +133,24 @@ if (navigator.mediaDevices.getUserMedia) {
           clipLabel.textContent = newClipName;
         }
       }
+    var waveform = document.createElement('div');
+    waveform.id = Math.random();
+    var wavesurfer = WaveSurfer.create({
+      container: waveform,
+      fillParent: false
+    });
+    clipContainer.appendChild(waveform);
+    console.log(wavesurfer.container.id)
+  var tracksArr = document.querySelectorAll('audio');
+  wavesurfer.load(tracksArr[tracksArr.length-1].src);
+    console.log('wavesurfer', wavesurfer, "trackslength", tracksArr.length-1);
+  wavesurfer.on('ready', function () {
+    wavesurfer.setMute(true);
+    wavesurfer.play();
+
+  });
+    waveArr.push(wavesurfer);
+
     }
 
     mediaRecorder.ondataavailable = function(e) {
@@ -143,7 +167,7 @@ if (navigator.mediaDevices.getUserMedia) {
     onSuccess(stream)
   })
   .catch(function(err){
-    onError(res)
+    onError(err)
   });
 
 } else {
@@ -208,3 +232,20 @@ window.onresize = function() {
 }
 
 window.onresize();
+
+playAll.onclick = function() {
+console.log("WA", waveArr);
+  for (var i = 0; i < waveArr.length; i++){
+    waveArr[i].setMute(false);
+  }
+  for (var i = 0; i < waveArr.length; i++){
+    waveArr[i].play();
+  }
+
+}
+
+pauseAll.onclick = function() {
+  for (var i = 0; i < waveArr.length; i++){
+    waveArr[i].pause();
+  }
+}
