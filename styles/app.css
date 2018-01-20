@@ -154,12 +154,22 @@ input[type=checkbox]:checked ~ aside {
 .clip p {
   cursor: pointer;
 }
+#seq {
+  margin-top: 50px;
+}
 
-#tone-container {
+#button-container {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  height: 500px;
+  align-items: space-around;
+  justify-content: space-between;
+  height: 200px;
+  width: 600px;
+  padding: 10px 0;
+}
+
+#play-tone {
+  display: flex;
+  align-content: flex-end;
 }
 
 #tone {
@@ -173,11 +183,25 @@ input[type=checkbox]:checked ~ aside {
 .flex-container {
   display: flex;
   justify-content: space-between;
+  height: 600px;
 }
 
 #synth, #tone-container {
   width: 50%
 }
+
+#power {
+	width:40px;
+	height:17px;
+	margin:15px 0px;
+}
+
+#echo {
+	width:200px;
+	height:20px;
+	margin:5px 3px;
+}
+
 /* Adjustments for wider screens */
 @media all and (min-width: 800px) {
   /* Don't take all the space as readability is lost when line length
@@ -186,7 +210,7 @@ input[type=checkbox]:checked ~ aside {
     width: 90%;
     max-width: 1000px;
     margin: 0 auto;
-    margin-top: 400px;
+    margin-top: 50px;
   }
 }
 

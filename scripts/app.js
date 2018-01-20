@@ -299,17 +299,17 @@ arp.start("1m").stop("4m");
 
 //NEXUSUI
 console.log(Nexus, "nexus")
-var textbuttonPlay = new Nexus.TextButton('#tone',{
+var textbuttonPlay = new Nexus.TextButton('#play-tone',{
   'size': [150,50],
   'text': 'Play'
 })
 
-var textbuttonStop = new Nexus.TextButton('#tone',{
+var textbuttonStop = new Nexus.TextButton('#stop-tone',{
   'size': [150,50],
   'text': 'Stop'
 })
 
-var textbuttonPause = new Nexus.TextButton('#tone',{
+var textbuttonPause = new Nexus.TextButton('#pause-tone',{
   'size': [150,50],
   'text': 'Pause'
 })
@@ -328,5 +328,59 @@ textbuttonPause.on('change',function(v) {
 
       Tone.Transport.pause();
     })
+textbuttonPause.colorize("fill","#ff0")
+textbuttonPlay.colorize("fill","#ff0")
+textbuttonStop.colorize("fill","#ff0")
+
+ /* SEQUENCER */
+
+// var sequencer = new Nexus.Sequencer('#seq');
+
+var sequencer = new Nexus.Sequencer('#seq',{
+  'size': [600,450],
+  'mode': 'toggle',
+  'rows': 12,
+  'columns': 16
+ })
+ sequencer.colorize("accent","#ff0")
+ sequencer.colorize("fill","#111")
 // var tone = document.querySelector("#tone");
 // tone.appendChild(textbutton);
+
+
+// Create interfaces
+var power = new Nexus.Toggle("#power");
+var delay = new Nexus.Slider("#echo");
+power.colorize("fill","#997");
+delay.colorize("fill","#997");
+// Create a sound source using Tone.js
+var synth = new Tone.Oscillator(0,"sine").start();
+var volume = new Tone.Volume(-Infinity);
+var delayGen = new Tone.FeedbackDelay(0.2,0.7);
+synth.chain( delayGen, volume, Tone.Master );
+
+// Customize interface &
+// Add event listeners
+delay.min = 0;
+delay.max = 0.7;
+delay.on('change',function(value) {
+	delayGen.wet.value = value;
+})
+delay.value = 0.4;
+
+power.on('change',function(v) {
+	volume.volume.cancelScheduledValues();
+	var level = v ? -20 : -Infinity;
+	volume.volume.rampTo(level,3)
+})
+
+// Create a sequence of note values
+var sequence = new Nexus.Sequence([ -7, -4, -1, 0,2,4,6,8,9,11,13,15,19,21]);
+
+// Create a repeating pulse
+// Change notes on each beat
+var beat = new Nexus.Interval(400,function(e) {
+	synth.frequency.value = Nexus.note( sequence.next(), -1 );
+});
+
+beat.start();
