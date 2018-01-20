@@ -72,6 +72,8 @@ if (navigator.mediaDevices.getUserMedia) {
 
     stop.onclick = function() {
       mediaRecorder.stop();
+
+    Tone.Master.mute = true;
       console.log(mediaRecorder.state);
       console.log("recorder stopped");
       record.style.background = "";
@@ -153,6 +155,7 @@ if (navigator.mediaDevices.getUserMedia) {
     wavesurfer.setMute(true);
     wavesurfer.play();
 
+    Tone.Master.mute = false;
   });
     waveArr.push(wavesurfer);
 
@@ -420,7 +423,7 @@ power1.on('change',function(v) {
 	volume1.volume.cancelScheduledValues();
 	var level1 = v ? -20 : -Infinity;
   volume1.volume.rampTo(level1,3)
-
+  console.log('v',v);
 
   var dest = synth1._context.createMediaStreamDestination();
   Tone.Master.connect(dest);
