@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <div class="flex-container">
+    <div id="synth">
     <table id="settingsPanel" ng-show="showSettings">
       <td id="ampSliders">
         <h3>amp</h3>
@@ -36,7 +38,11 @@
       <p><b>stereo width</b> 0%<input id="widthSlider" type="range" min="0" max="1" step=".01" onchange="webSynth.width(this.value)">100%</p>
       <div id="keyboard"></div>
     </table>
-
+    </div>
+    <div id="tone-container">
+      <div id="tone"></div>
+    </div>
+  </div>
     <div class="wrapper">
 
             <header>
@@ -85,6 +91,7 @@
 
           <script src="scripts/mediaDevices-getUserMedia-polyfill.js"></script>
          <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/0.12.54/Tone.js"></script>
+         <script src="node_modules/nexusui/dist/NexusUI.js"></script>
           <!-- Below is your custom application script -->
           <script src="scripts/app.js"></script>
 

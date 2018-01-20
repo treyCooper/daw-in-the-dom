@@ -1,5 +1,4 @@
 // set up basic variables for app
-
 var record = document.querySelector('.record');
 var stop = document.querySelector('.stop');
 var enableMic = document.querySelector('.enableMic');
@@ -154,11 +153,6 @@ if (navigator.mediaDevices.getUserMedia) {
     wavesurfer.setMute(true);
     wavesurfer.play();
 
-    console.log('timelime', timeline.drawer.wrapper.scrollWidth )
-
-    // //timeline.drawer.width = 2000;
-    // timeline.canvases[0].width = 2000;
-    console.log(timeline.canvases[0].attributes.width, 'test');
   });
     waveArr.push(wavesurfer);
 
@@ -300,4 +294,39 @@ var arp = new Tone.Pattern(function(time, pitch) {
 arp.pattern = "downUp";
 arp.start("1m").stop("4m");
 //callback order: "G3", "E3", "C3", "E3", ...repeat
-Tone.Transport.start();
+
+
+
+//NEXUSUI
+console.log(Nexus, "nexus")
+var textbuttonPlay = new Nexus.TextButton('#tone',{
+  'size': [150,50],
+  'text': 'Play'
+})
+
+var textbuttonStop = new Nexus.TextButton('#tone',{
+  'size': [150,50],
+  'text': 'Stop'
+})
+
+var textbuttonPause = new Nexus.TextButton('#tone',{
+  'size': [150,50],
+  'text': 'Pause'
+})
+
+textbuttonPlay.on('change',function(v) {
+
+  Tone.Transport.start();
+})
+
+textbuttonStop.on('change',function(v) {
+
+    Tone.Transport.stop();
+  })
+
+textbuttonPause.on('change',function(v) {
+
+      Tone.Transport.pause();
+    })
+// var tone = document.querySelector("#tone");
+// tone.appendChild(textbutton);
