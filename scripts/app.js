@@ -298,7 +298,6 @@ arp.start("1m").stop("4m");
 
 
 //NEXUSUI
-console.log(Nexus, "nexus")
 var textbuttonPlay = new Nexus.TextButton('#play-tone',{
   'size': [150,50],
   'text': 'Play'
@@ -371,7 +370,13 @@ delay.value = 0.4;
 power.on('change',function(v) {
 	volume.volume.cancelScheduledValues();
 	var level = v ? -20 : -Infinity;
-	volume.volume.rampTo(level,3)
+  volume.volume.rampTo(level,3)
+
+  //try to connect
+  var dest = synth._context.createMediaStreamDestination();
+  Tone.Master.connect(dest);
+  visualize(dest.stream);
+  onSuccess(dest.stream);
 })
 
 // Create a sequence of note values
@@ -384,3 +389,52 @@ var beat = new Nexus.Interval(400,function(e) {
 });
 
 beat.start();
+console.log('beat', beat)
+
+console.log('sequence', sequence)
+
+console.log('synth', synth)
+
+console.log('websynth', webSynth)
+
+var power1 = new Nexus.Toggle("#power1");
+var delay1 = new Nexus.Slider("#echo1");
+power1.colorize("fill","#997");
+delay1.colorize("fill","#997");
+// Create a sound source using Tone.js
+var synth1 = new Tone.Oscillator(0,"triangle").start();
+var volume1 = new Tone.Volume(-Infinity);
+var delayGen1 = new Tone.FeedbackDelay(0.2,0.7);
+synth1.chain( delayGen1, volume1, Tone.Master );
+
+// Customize interface &
+// Add event listeners
+delay1.min = 0;
+delay1.max = 0.7;
+delay1.on('change',function(value) {
+	delayGen1.wet.value = value;
+})
+delay1.value = 0.4;
+
+power1.on('change',function(v) {
+	volume1.volume.cancelScheduledValues();
+	var level1 = v ? -20 : -Infinity;
+  volume1.volume.rampTo(level1,3)
+
+
+  var dest = synth1._context.createMediaStreamDestination();
+  Tone.Master.connect(dest);
+  visualize(dest.stream);
+  onSuccess(dest.stream);
+})
+
+// Create a sequence of note values
+var sequence1 = new Nexus.Sequence([0,2,4,6]);
+
+// Create a repeating pulse
+// Change notes on each beat
+var beat1 = new Nexus.Interval(200,function(e) {
+	synth1.frequency.value = Nexus.note( sequence1.next(), -1 );
+});
+
+beat1.start();
