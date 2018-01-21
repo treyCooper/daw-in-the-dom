@@ -154,7 +154,7 @@ input[type=checkbox]:checked ~ aside {
 .clip p {
   cursor: pointer;
 }
-#seq {
+#seq, #synthRack {
   margin-top: 50px;
 }
 
@@ -179,6 +179,16 @@ input[type=checkbox]:checked ~ aside {
   width: 600px
 }
 
+.text {
+  padding: 5px 15px;
+  color: #2bb
+}
+
+#synthRack {
+  width: 200px;
+  align-items: space-between;
+  justify-content: space-between;
+}
 
 .flex-container {
   display: flex;
@@ -186,10 +196,14 @@ input[type=checkbox]:checked ~ aside {
   height: 600px;
 }
 
-#synth, #tone-container {
-  width: 50%
+#synth, #synth-container {
+  width: 50%;
 }
 
+#synth-container {
+  align-items: space-between;
+  justify-content: space-between;
+}
 #power {
 	width:40px;
 	height:17px;

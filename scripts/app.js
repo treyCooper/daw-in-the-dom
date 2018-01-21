@@ -314,8 +314,6 @@ var initButton = new Nexus.TextButton('#set',{
   'size': [100,50],
   'text': 'Set'
 })
-
-
  /* SEQUENCER */
 
 // var sequencer = new Nexus.Sequencer('#seq');
@@ -339,9 +337,15 @@ console.log('seq', sequencer)
 var vol = new Tone.Volume(-15);
 const verb = new Tone.Freeverb(0.25).connect(Tone.Master);
 const seqDelay = new Tone.FeedbackDelay("8n", 0.2);
-var filter = new Tone.Filter(500, "lowpass");
+var filter = new Tone.Filter(5000, "lowpass");
 
-var synthTone = new Tone.PolySynth(8, Tone.MonoSynth)
+var synthTone = new Tone.PolySynth(8, Tone.FMSynth)
+
+//CONTROLS
+
+let controls = new Nexus.Rack("#synthRack")
+
+controls.colorize("fill","#d1d3d6")
 
 const initSeq = function(v){
     var rootPattern = sequencer.matrix.pattern[7].map(function(index) {
@@ -418,7 +422,7 @@ const initSeq = function(v){
   }, maj7Pattern);
 
   var octPattern = sequencer.matrix.pattern[0].map(function(index) {
-    return index ? "B3" : " ";
+    return index ? "C4" : " ";
   })
   var arpoct = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {

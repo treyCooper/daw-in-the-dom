@@ -39,14 +39,29 @@
       <div id="keyboard"></div>
     </table>
     </div>
+    <div class="flex-container" id="synth-container">
     <div id="tone-container">
+
       <div id="seq"></div>
       <div id="button-container">
       <div id="play-tone"></div>
       <div id="pause-tone"></div>
       <div id="stop-tone"></div>
       <div id="set"></div>
+
+
     </div>
+    </div>
+    <div id="synthRack" class="flex-container">
+        <div nexus-ui="dial" id="volume"></div>
+        <div class="text">VOLUME</div>
+        <div nexus-ui="dial" id="freq"></div>
+        <div class="text">CUTOFF</div>
+        <div nexus-ui="dial" id="reverb"></div>
+        <div class="text">REVERB</div>
+        <div nexus-ui="dial" id="delay"></div>
+        <div class="text">DELAY</div>
+      </div>
     </div>
   </div>
   <div id="power" ></div>
