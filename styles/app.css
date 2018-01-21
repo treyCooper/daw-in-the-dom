@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+#synth * {
+  margin: 5px;
+}
+
 html, body {
   height: 100%;
 }
