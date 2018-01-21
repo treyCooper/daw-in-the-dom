@@ -40,7 +40,7 @@ if (navigator.mediaDevices.getUserMedia) {
 
       var dest = webSynth.audioCtx.createMediaStreamDestination();
       webSynth.voices.forEach(function(voice){
-        voice.amp.connect(dest);
+        voice.amp.connect(dest)
       })
       visualize(dest.stream);
       onSuccess(dest.stream);
@@ -258,7 +258,7 @@ pauseAll.onclick = function() {
   }
 }
 //create a synth and connect it to the master output (your speakers)
-var synth = new Tone.Synth().toMaster();
+var synthTone = new Tone.Synth().toMaster();
 Tone.Transport.bpm.value = 270;
 //play a middle 'C' for the duration of an 8th note
 //synth.triggerAttackRelease("D4", "8n");
@@ -272,25 +272,25 @@ Tone.Transport.bpm.value = 270;
 // loop.start("0m").stop("4m");
 
 var loop1 = new Tone.Loop(function(time){
-  synth.triggerAttackRelease("B4", "16n", time);
+  synthTone.triggerAttackRelease("B4", "16n", time);
 }, "8n");
 loop1.start("5m").stop("5:2:1");
 
 var part = new Tone.Part(function(time, pitch){
-	synth.triggerAttackRelease(pitch, "8n", time);
+	synthTone.triggerAttackRelease(pitch, "8n", time);
 }, [["0:0", "C4"], ["0:1", "G3"], ["0:2", "C3"], ["0:3", "G3"], ["0:4", "C3"]]);
 
 part.start("4m");
 
 var part = new Tone.Part(function(time, pitch){
-	synth.triggerAttackRelease(pitch, "8n", time);
+	synthTone.triggerAttackRelease(pitch, "8n", time);
 }, [["0:0", "C4"], ["0:1", "G3"], ["0:2", "C3"], ["0:3", "G2"], ["0:4", "C2"]]);
 
 part.start("6m");
 
 //cycle up and then down the array of values
 var arp = new Tone.Pattern(function(time, pitch) {
-  synth.triggerAttackRelease(pitch, "4n", time);
+  synthTone.triggerAttackRelease(pitch, "4n", time);
 }, ["C3", "E3", "G3", "B3"], "upDown");
 //callback order: "C3", "E3", "G3", "E3", ...repeat
 
@@ -348,8 +348,12 @@ var sequencer = new Nexus.Sequencer('#seq',{
  sequencer.colorize("fill","#111")
 // var tone = document.querySelector("#tone");
 // tone.appendChild(textbutton);
+sequencer.matrix.set.cell(0, 0, 1);
+console.log('seq', sequencer)
 
 
+
+ /* SLIDERS */
 // Create interfaces
 var power = new Nexus.Toggle("#power");
 var delay = new Nexus.Slider("#echo");
@@ -380,6 +384,14 @@ power.on('change',function(v) {
   Tone.Master.connect(dest);
   visualize(dest.stream);
   onSuccess(dest.stream);
+
+  //disable other recording modes
+  synthMode = false;
+  console.log("Nexus Mode!");
+  enableMic.style.background = "";
+  enableSynth.style.background = "";
+  enableSynth.disabled = false;
+  enableMic.disabled = false;
 })
 
 // Create a sequence of note values
@@ -429,6 +441,14 @@ power1.on('change',function(v) {
   Tone.Master.connect(dest);
   visualize(dest.stream);
   onSuccess(dest.stream);
+
+  //disable other recording modes
+  synthMode = false;
+  console.log("Nexus Mode!");
+  enableMic.style.background = "";
+  enableSynth.style.background = "";
+  enableSynth.disabled = false;
+  enableMic.disabled = false;
 })
 
 // Create a sequence of note values
@@ -441,3 +461,5 @@ var beat1 = new Nexus.Interval(200,function(e) {
 });
 
 beat1.start();
+
+
