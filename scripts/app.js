@@ -296,18 +296,23 @@ Tone.Transport.bpm.value = 140;
 
 //NEXUSUI
 var textbuttonPlay = new Nexus.TextButton('#play-tone',{
-  'size': [150,50],
+  'size': [100,50],
   'text': 'Play'
 })
 
 var textbuttonStop = new Nexus.TextButton('#stop-tone',{
-  'size': [150,50],
+  'size': [100,50],
   'text': 'Stop'
 })
 
 var textbuttonPause = new Nexus.TextButton('#pause-tone',{
-  'size': [150,50],
+  'size': [100,50],
   'text': 'Pause'
+})
+
+var initButton = new Nexus.TextButton('#set',{
+  'size': [100,50],
+  'text': 'Set'
 })
 
 
@@ -325,19 +330,17 @@ var sequencer = new Nexus.Sequencer('#seq',{
  sequencer.colorize("fill","#111")
 // var tone = document.querySelector("#tone");
 // tone.appendChild(textbutton);
-sequencer.matrix.set.cell(0, 0, 1);
+//sequencer.matrix.set.cell(0, 0, 1);
 console.log('seq', sequencer)
 
-var obj = {
 
-}
 
 const scale = ["C4", "B3", "A#3", "A3", "G#3", "G3", "F#3", "F3", "G#3", "A3", "A#3", "B3", "C4"]
 var vol = new Tone.Volume(-15);
 
 
 
-sequencer.on('change', function(v){
+const initSeq = function(v){
   var octPattern = sequencer.matrix.pattern[0].map(function(index) {
     return index ? "C4" : " ";
   })
@@ -655,15 +658,23 @@ textbuttonStop.on('change',function(v) {
   // stopped = true;
   //   console.log(arp, "arp")
   })
-})
+}
 textbuttonPause.on('change',function(v) {
 
       Tone.Transport.pause();
+
     })
+
+initButton.on('change', function(v) {
+
+          initSeq();
+
+})
 
 textbuttonPause.colorize("fill","#ff0")
 textbuttonPlay.colorize("fill","#ff0")
 textbuttonStop.colorize("fill","#ff0")
+initButton.colorize("fill","#ff0")
 
 
  /* SLIDERS */
