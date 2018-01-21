@@ -258,8 +258,8 @@ pauseAll.onclick = function() {
   }
 }
 //create a synth and connect it to the master output (your speakers)
-var synthTone = new Tone.Synth().toMaster();
-Tone.Transport.bpm.value = 270;
+
+Tone.Transport.bpm.value = 140;
 //play a middle 'C' for the duration of an 8th note
 //synth.triggerAttackRelease("D4", "8n");
 // synth.triggerAttackRelease("D4", "8n");
@@ -271,31 +271,25 @@ Tone.Transport.bpm.value = 270;
 
 // loop.start("0m").stop("4m");
 
-var loop1 = new Tone.Loop(function(time){
-  synthTone.triggerAttackRelease("B4", "16n", time);
-}, "8n");
-loop1.start("5m").stop("5:2:1");
+// var loop1 = new Tone.Loop(function(time){
+//   synthTone.triggerAttackRelease("B4", "16n", time);
+// }, "8n");
+// loop1.start("5m").stop("5:2:1");
 
-var part = new Tone.Part(function(time, pitch){
-	synthTone.triggerAttackRelease(pitch, "8n", time);
-}, [["0:0", "C4"], ["0:1", "G3"], ["0:2", "C3"], ["0:3", "G3"], ["0:4", "C3"]]);
+// var part = new Tone.Part(function(time, pitch){
+// 	synthTone.triggerAttackRelease(pitch, "8n", time);
+// }, [["0:0", "C4"], ["0:1", "G3"], ["0:2", "C3"], ["0:3", "G3"], ["0:4", "C3"]]);
 
-part.start("4m");
+// part.start("4m");
 
-var part = new Tone.Part(function(time, pitch){
-	synthTone.triggerAttackRelease(pitch, "8n", time);
-}, [["0:0", "C4"], ["0:1", "G3"], ["0:2", "C3"], ["0:3", "G2"], ["0:4", "C2"]]);
+// var part = new Tone.Part(function(time, pitch){
+// 	synthTone.triggerAttackRelease(pitch, "8n", time);
+// }, [["0:0", "C4"], ["0:1", "G3"], ["0:2", "C3"], ["0:3", "G2"], ["0:4", "C2"]]);
 
-part.start("6m");
-
+// part.start("6m");
+// var patternArr = ["C3", "E3", " ", "B3"];
 //cycle up and then down the array of values
-var arp = new Tone.Pattern(function(time, pitch) {
-  synthTone.triggerAttackRelease(pitch, "4n", time);
-}, ["C3", "E3", "G3", "B3"], "upDown");
-//callback order: "C3", "E3", "G3", "E3", ...repeat
 
-arp.pattern = "downUp";
-arp.start("1m").stop("4m");
 //callback order: "G3", "E3", "C3", "E3", ...repeat
 
 
@@ -315,15 +309,161 @@ var textbuttonPause = new Nexus.TextButton('#pause-tone',{
   'size': [150,50],
   'text': 'Pause'
 })
-
+var stopped = false;
+var vol = new Tone.Volume(-15);
 textbuttonPlay.on('change',function(v) {
+  const scale = ["C4", "B3", "A#3", "A3", "G#3", "G3", "F#3", "F3", "G#3", "A3", "A#3", "B3", "C4"]
+  // for (let i = sequencer.matrix.pattern.length -1; i >= 0; i--){
+  //   console.log(i);
+  // }
+  ///Tone.Transport = new Tone.Transport()
+  var rootPattern = sequencer.matrix.pattern[12].map(function(index) {
+    return index ? "C3" : " ";
+  })
+  console.log('rootPattern', rootPattern)
+  var synthTone = new Tone.MonoSynth({
+    "oscillator" : {
+      "type" : "triangle"
+   },
+   "envelope" : {
+     "attack" : 0.1
+   }
+  })
+ arp = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+    synthTone.triggerAttackRelease(pitch, "4n", time);
+    }
+    console.log('rootPattern in func', rootPattern)
+  }, rootPattern);
 
+  synthTone.chain(vol, Tone.Master)
+  arp.start("0m").stop("4m");
+  console.log('arp', arp);
+  var min2Pattern = sequencer.matrix.pattern[11].map(function(index) {
+    return index ? "C#3" : " ";
+  })
+  var synthToneMin2 = new Tone.MonoSynth({
+    "oscillator" : {
+      "type" : "triangle"
+   },
+   "envelope" : {
+     "attack" : 0.1
+   }
+  })
+  var arpMin2 = new Tone.Sequence(function(time, pitch) {
+
+    if(pitch !== " ") {
+    synthToneMin2.triggerAttackRelease(pitch, "4n", time);
+    }
+  }, min2Pattern);
+  synthToneMin2.chain(vol, Tone.Master)
+  arpMin2.start("1m").stop("4m")
+
+  var Maj2Pattern = sequencer.matrix.pattern[10].map(function(index) {
+    return index ? "D3" : " ";
+  })
+  var synthToneMaj2 = new Tone.Synth({
+    "oscillator" : {
+      "type" : "triangle"
+   },
+   "envelope" : {
+     "attack" : 0.1
+   }
+  })
+  var arpMaj2 = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+    synthToneMaj2.triggerAttackRelease(pitch, "4n", time);
+    }
+  }, Maj2Pattern);
+  synthToneMaj2.chain(vol, Tone.Master)
+  arpMaj2.start("1m").stop("4m")
+
+  var min3Pattern = sequencer.matrix.pattern[9].map(function(index) {
+    return index ? "D#3" : " ";
+  })
+  var synthTonemin3 = new Tone.MonoSynth({
+    "oscillator" : {
+      "type" : "triangle"
+   },
+   "envelope" : {
+     "attack" : 0.1
+   }
+  });
+  var arpmin3 = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+    synthTonemin3.triggerAttackRelease(pitch, "4n", time);
+    }
+  }, min3Pattern);
+  synthTonemin3.chain(vol, Tone.Master)
+  arpmin3.start("1m").stop("4m");
+
+  var maj3Pattern = sequencer.matrix.pattern[8].map(function(index) {
+    return index ? "E3" : " ";
+  })
+  var synthToneMaj3 = new Tone.MonoSynth({
+    "oscillator" : {
+      "type" : "triangle"
+   },
+   "envelope" : {
+     "attack" : 0.1
+   }
+  });
+  var arpMaj3 = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+    synthToneMaj3.triggerAttackRelease(pitch, "4n", time);
+    }
+  }, maj3Pattern);
+  synthToneMaj3.chain(vol, Tone.Master)
+  arpMaj3.start("1m").stop("5m");
+  Tone.Transport.loop = true
+  Tone.Transport.loopStart = "1m"
+ Tone.Transport.loopEnd = "5m";
   Tone.Transport.start();
+
+  console.log(Tone.Transport._scheduledEvents, 'tranpsort')
 })
+// let rowSeqs = [];
+// let patterns = [];
+// let synthTones = [];
+// textbuttonPlay.on('change',function(v) {
+//   let vol = new Tone.Volume(-15);
+//   console.log("LOOOOP")
+//   const scale = ["C4", "B3", "A#3", "A3", "G#3", "G3", "F#3", "F3", "E3", "D#3", "D3", "C#3", "C3"];
+
+//   for (let i = sequencer.matrix.pattern.length -1; i >= 0; i--){
+//     synthTones[i] = new Tone.MonoSynth({
+//       "oscillator" : {
+//         "type" : "triangle"
+//      },
+//      "envelope" : {
+//        "attack" : 0.1
+//      }
+//     })
+//     synthTones[i].chain(vol, Tone.Master)
+//     patterns[i] = sequencer.matrix.pattern[i].map(function(index) {
+//       return index ? scale[i] : " ";
+
+//   })
+//   rowSeqs[i] = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthTones[i].triggerAttackRelease(pitch, "8n", time);
+//     }
+//   }, patterns[i]);
+//   rowSeqs[i].start("1m");
+//   }
+
+//   Tone.Transport.start();
+// })
 
 textbuttonStop.on('change',function(v) {
-
     Tone.Transport.stop();
+    for (id in Tone.Transport._scheduledEvents){
+      Tone.Transport.clear(id);
+    }
+    console.log(Tone.Transport._scheduledEvents, "shoud be empty")
+  // Tone.Transport.
+  stopped = true;
+    console.log(arp, "arp")
   })
 
 textbuttonPause.on('change',function(v) {
@@ -339,9 +479,9 @@ textbuttonStop.colorize("fill","#ff0")
 // var sequencer = new Nexus.Sequencer('#seq');
 
 var sequencer = new Nexus.Sequencer('#seq',{
-  'size': [600,450],
+  'size': [600,470],
   'mode': 'toggle',
-  'rows': 12,
+  'rows': 13,
   'columns': 16
  })
  sequencer.colorize("accent","#ff0")
