@@ -309,117 +309,305 @@ var textbuttonPause = new Nexus.TextButton('#pause-tone',{
   'size': [150,50],
   'text': 'Pause'
 })
-var stopped = false;
+
+
+ /* SEQUENCER */
+
+// var sequencer = new Nexus.Sequencer('#seq');
+
+var sequencer = new Nexus.Sequencer('#seq',{
+  'size': [600,470],
+  'mode': 'toggle',
+  'rows': 13,
+  'columns': 16
+ })
+ sequencer.colorize("accent","#ff0")
+ sequencer.colorize("fill","#111")
+// var tone = document.querySelector("#tone");
+// tone.appendChild(textbutton);
+sequencer.matrix.set.cell(0, 0, 1);
+console.log('seq', sequencer)
+
+var obj = {
+
+}
+
+const scale = ["C4", "B3", "A#3", "A3", "G#3", "G3", "F#3", "F3", "G#3", "A3", "A#3", "B3", "C4"]
 var vol = new Tone.Volume(-15);
+
+
+
+sequencer.on('change', function(v){
+  var octPattern = sequencer.matrix.pattern[0].map(function(index) {
+    return index ? "C4" : " ";
+  })
+  var synthToneoct = new Tone.MonoSynth({
+    "oscillator" : {
+      "type" : "triangle"
+   },
+   "envelope" : {
+     "attack" : 0
+   }
+  });
+  var arpoct = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+    synthToneoct.triggerAttackRelease(pitch, "4n", time);
+    }
+  }, octPattern);
+  synthToneoct.chain(vol, Tone.Master)
+
+
+var stopped = false;
 textbuttonPlay.on('change',function(v) {
-  const scale = ["C4", "B3", "A#3", "A3", "G#3", "G3", "F#3", "F3", "G#3", "A3", "A#3", "B3", "C4"]
+  //obj.hi = 'goodnight';
   // for (let i = sequencer.matrix.pattern.length -1; i >= 0; i--){
   //   console.log(i);
   // }
   ///Tone.Transport = new Tone.Transport()
-  var rootPattern = sequencer.matrix.pattern[12].map(function(index) {
-    return index ? "C3" : " ";
-  })
-  console.log('rootPattern', rootPattern)
-  var synthTone = new Tone.MonoSynth({
-    "oscillator" : {
-      "type" : "triangle"
-   },
-   "envelope" : {
-     "attack" : 0.1
-   }
-  })
- arp = new Tone.Sequence(function(time, pitch) {
-    if(pitch !== " ") {
-    synthTone.triggerAttackRelease(pitch, "4n", time);
-    }
-    console.log('rootPattern in func', rootPattern)
-  }, rootPattern);
+//   var rootPattern = sequencer.matrix.pattern[12].map(function(index) {
+//     return index ? "C3" : " ";
+//   })
+//   console.log('rootPattern', rootPattern)
+//   var synthTone = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   })
+//  arp = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthTone.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, rootPattern);
 
-  synthTone.chain(vol, Tone.Master)
-  arp.start("0m").stop("4m");
-  console.log('arp', arp);
-  var min2Pattern = sequencer.matrix.pattern[11].map(function(index) {
-    return index ? "C#3" : " ";
-  })
-  var synthToneMin2 = new Tone.MonoSynth({
-    "oscillator" : {
-      "type" : "triangle"
-   },
-   "envelope" : {
-     "attack" : 0.1
-   }
-  })
-  var arpMin2 = new Tone.Sequence(function(time, pitch) {
+//   synthTone.chain(vol, Tone.Master)
+//   arp.start("1m").stop("5m");
+//   console.log('arp', arp);
+//   var min2Pattern = sequencer.matrix.pattern[11].map(function(index) {
+//     return index ? "C#3" : " ";
+//   })
+//   var synthToneMin2 = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   })
+//   var arpMin2 = new Tone.Sequence(function(time, pitch) {
 
-    if(pitch !== " ") {
-    synthToneMin2.triggerAttackRelease(pitch, "4n", time);
-    }
-  }, min2Pattern);
-  synthToneMin2.chain(vol, Tone.Master)
-  arpMin2.start("1m").stop("4m")
+//     if(pitch !== " ") {
+//     synthToneMin2.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, min2Pattern);
+//   synthToneMin2.chain(vol, Tone.Master)
+//   arpMin2.start("1m").stop("5m")
 
-  var Maj2Pattern = sequencer.matrix.pattern[10].map(function(index) {
-    return index ? "D3" : " ";
-  })
-  var synthToneMaj2 = new Tone.Synth({
-    "oscillator" : {
-      "type" : "triangle"
-   },
-   "envelope" : {
-     "attack" : 0.1
-   }
-  })
-  var arpMaj2 = new Tone.Sequence(function(time, pitch) {
-    if(pitch !== " ") {
-    synthToneMaj2.triggerAttackRelease(pitch, "4n", time);
-    }
-  }, Maj2Pattern);
-  synthToneMaj2.chain(vol, Tone.Master)
-  arpMaj2.start("1m").stop("4m")
+//   var Maj2Pattern = sequencer.matrix.pattern[10].map(function(index) {
+//     return index ? "D3" : " ";
+//   })
+//   var synthToneMaj2 = new Tone.Synth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   })
+//   var arpMaj2 = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthToneMaj2.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, Maj2Pattern);
+//   synthToneMaj2.chain(vol, Tone.Master)
+//   arpMaj2.start("1m").stop("5m")
 
-  var min3Pattern = sequencer.matrix.pattern[9].map(function(index) {
-    return index ? "D#3" : " ";
-  })
-  var synthTonemin3 = new Tone.MonoSynth({
-    "oscillator" : {
-      "type" : "triangle"
-   },
-   "envelope" : {
-     "attack" : 0.1
-   }
-  });
-  var arpmin3 = new Tone.Sequence(function(time, pitch) {
-    if(pitch !== " ") {
-    synthTonemin3.triggerAttackRelease(pitch, "4n", time);
-    }
-  }, min3Pattern);
-  synthTonemin3.chain(vol, Tone.Master)
-  arpmin3.start("1m").stop("4m");
+//   var min3Pattern = sequencer.matrix.pattern[9].map(function(index) {
+//     return index ? "D#3" : " ";
+//   })
+//   var synthTonemin3 = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   });
+//   var arpmin3 = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthTonemin3.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, min3Pattern);
+//   synthTonemin3.chain(vol, Tone.Master)
+//   arpmin3.start("1m").stop("5m");
 
-  var maj3Pattern = sequencer.matrix.pattern[8].map(function(index) {
-    return index ? "E3" : " ";
-  })
-  var synthToneMaj3 = new Tone.MonoSynth({
-    "oscillator" : {
-      "type" : "triangle"
-   },
-   "envelope" : {
-     "attack" : 0.1
-   }
-  });
-  var arpMaj3 = new Tone.Sequence(function(time, pitch) {
-    if(pitch !== " ") {
-    synthToneMaj3.triggerAttackRelease(pitch, "4n", time);
-    }
-  }, maj3Pattern);
-  synthToneMaj3.chain(vol, Tone.Master)
-  arpMaj3.start("1m").stop("5m");
-  Tone.Transport.loop = true
-  Tone.Transport.loopStart = "1m"
- Tone.Transport.loopEnd = "5m";
-  Tone.Transport.start();
+//   var maj3Pattern = sequencer.matrix.pattern[8].map(function(index) {
+//     return index ? "E3" : " ";
+//   })
+//   var synthToneMaj3 = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   });
+//   var arpMaj3 = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthToneMaj3.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, maj3Pattern);
+//   synthToneMaj3.chain(vol, Tone.Master)
+//   arpMaj3.start("1m").stop("5m");
 
+//   var p4Pattern = sequencer.matrix.pattern[7].map(function(index) {
+//     return index ? "F3" : " ";
+//   })
+//   var synthTonep4 = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   });
+//   var arpp4 = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthTonep4.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, p4Pattern);
+//   synthTonep4.chain(vol, Tone.Master)
+//   arpp4.start("1m").stop("5m");
+
+//   var tritonePattern = sequencer.matrix.pattern[6].map(function(index) {
+//     return index ? "F#3" : " ";
+//   })
+//   var synthTonetritone = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   });
+//   var arptritone = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthTonetritone.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, tritonePattern);
+//   synthTonetritone.chain(vol, Tone.Master)
+//   arptritone.start("1m").stop("5m");
+
+//   var p5Pattern = sequencer.matrix.pattern[5].map(function(index) {
+//     return index ? "G3" : " ";
+//   })
+//   var synthTonep5 = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   });
+//   var arpp5 = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthTonep5.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, p5Pattern);
+//   synthTonep5.chain(vol, Tone.Master)
+//   arpp5.start("1m").stop("5m");
+
+//   var sharp5Pattern = sequencer.matrix.pattern[4].map(function(index) {
+//     return index ? "G#3" : " ";
+//   })
+//   var synthTonesharp5 = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   });
+//   var arpsharp5 = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthTonesharp5.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, sharp5Pattern);
+//   synthTonesharp5.chain(vol, Tone.Master)
+//   arpsharp5.start("1m").stop("5m");
+
+//   var maj6Pattern = sequencer.matrix.pattern[3].map(function(index) {
+//     return index ? "A3" : " ";
+//   })
+//   var synthTonemaj6 = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0
+//    }
+//   });
+//   var arpmaj6 = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthTonemaj6.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, maj6Pattern);
+//   synthTonemaj6.chain(vol, Tone.Master)
+//   arpmaj6.start("1m").stop("5m");
+
+//   var flat7Pattern = sequencer.matrix.pattern[2].map(function(index) {
+//     return index ? "F3" : " ";
+//   })
+//   var synthToneflat7 = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0
+//    }
+//   });
+//   var arpflat7 = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthToneflat7.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, flat7Pattern);
+//   synthToneflat7.chain(vol, Tone.Master)
+//   arpflat7.start("1m").stop("5m");
+
+//   var maj7Pattern = sequencer.matrix.pattern[1].map(function(index) {
+//     return index ? "B3" : " ";
+//   })
+//   var synthTonemaj7 = new Tone.MonoSynth({
+//     "oscillator" : {
+//       "type" : "triangle"
+//    },
+//    "envelope" : {
+//      "attack" : 0.1
+//    }
+//   });
+//   var arpmaj7 = new Tone.Sequence(function(time, pitch) {
+//     if(pitch !== " ") {
+//     synthTonemaj7.triggerAttackRelease(pitch, "4n", time);
+//     }
+//   }, maj7Pattern);
+//   synthTonemaj7.chain(vol, Tone.Master)
+//   arpmaj7.start("1m").stop("5m");
+
+
+  //arpoct.start("2m").stop("6m");
+
+//   Tone.Transport.loop = true
+//   Tone.Transport.loopStart = "2m"
+//  Tone.Transport.loopEnd = "6m";
+
+Tone.Transport.start();
+
+  arpoct.start()
+  // rowSeqs.forEach(function(row){
+  //   console.log(row)
+  //   row.start()})
   console.log(Tone.Transport._scheduledEvents, 'tranpsort')
 })
 // let rowSeqs = [];
@@ -456,41 +644,26 @@ textbuttonPlay.on('change',function(v) {
 // })
 
 textbuttonStop.on('change',function(v) {
-    Tone.Transport.stop();
-    for (id in Tone.Transport._scheduledEvents){
-      Tone.Transport.clear(id);
-    }
-    console.log(Tone.Transport._scheduledEvents, "shoud be empty")
-  // Tone.Transport.
-  stopped = true;
-    console.log(arp, "arp")
+  arpoct.stop()
+  Tone.Transport.stop()
+  arpoct.removeAll()
+  //   for (id in Tone.Transport._scheduledEvents){
+  //     Tone.Transport.clear(id);
+  //   }
+  //   console.log(Tone.Transport._scheduledEvents, "shoud be empty")
+  // // Tone.Transport.
+  // stopped = true;
+  //   console.log(arp, "arp")
   })
-
+})
 textbuttonPause.on('change',function(v) {
 
       Tone.Transport.pause();
     })
+
 textbuttonPause.colorize("fill","#ff0")
 textbuttonPlay.colorize("fill","#ff0")
 textbuttonStop.colorize("fill","#ff0")
-
- /* SEQUENCER */
-
-// var sequencer = new Nexus.Sequencer('#seq');
-
-var sequencer = new Nexus.Sequencer('#seq',{
-  'size': [600,470],
-  'mode': 'toggle',
-  'rows': 13,
-  'columns': 16
- })
- sequencer.colorize("accent","#ff0")
- sequencer.colorize("fill","#111")
-// var tone = document.querySelector("#tone");
-// tone.appendChild(textbutton);
-sequencer.matrix.set.cell(0, 0, 1);
-console.log('seq', sequencer)
-
 
 
  /* SLIDERS */
