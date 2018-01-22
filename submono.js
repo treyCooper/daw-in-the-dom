@@ -18,18 +18,18 @@ var Monosynth = function Monosynth(audioCtx, config) {
     synth.pan      = audioCtx.createPanner(),
 
     synth.maxGain  = config.maxGain  || 0.9, // out of 1
-    synth.attack   = config.attack   || 0.1, // in seconds
+    synth.attack   = config.attack   || 0.01, // in seconds
     synth.decay    = config.decay    || 0.0, // in seconds
     synth.sustain  = config.sustain  || 1.0, // out of 1
     synth.release  = config.release  || 0.8, // in seconds
 
     //low-pass filter
     synth.cutoff              = synth.filter.frequency;
-    synth.cutoff.maxFrequency = config.cutoff.maxFrequency || 7500; // in hertz
-    synth.cutoff.attack       = config.cutoff.attack       || 0.1; // in seconds
+    synth.cutoff.maxFrequency = config.cutoff.maxFrequency || 3000; // in hertz
+    synth.cutoff.attack       = config.cutoff.attack       || 0.01; // in seconds
     synth.cutoff.decay        = config.cutoff.decay        || 2.5; // in seconds
     synth.cutoff.sustain      = config.cutoff.sustain      || 0.2; // out of 1
-    
+
     synth.amp.gain.value = 0;
     synth.filter.type = 'lowpass';
     synth.filter.connect(synth.amp);
@@ -39,7 +39,7 @@ var Monosynth = function Monosynth(audioCtx, config) {
     synth.osc.connect(synth.pan);
     synth.pan.connect(synth.filter);
     synth.osc.start(0);
-    
+
     synth.waveform(config.waveform || 'sine');
     synth.pitch(config.pitch || 440);
 
@@ -52,7 +52,7 @@ var Monosynth = function Monosynth(audioCtx, config) {
     synth.amp.gain.setValueAtTime(synth.amp.gain.value, now);
     return now;
   };
-  
+
   Synth.prototype.pitch = function pitch(newPitch) {
     if (newPitch) {
       var now = synth.audioCtx.currentTime;
