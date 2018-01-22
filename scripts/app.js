@@ -350,6 +350,14 @@ var sequencer = new Nexus.Sequencer('#seq',{
  })
  drumSequencerTimer.colorize("fill","#d1d3d6")
 
+ var sequencerTimer = new Nexus.Sequencer('#seqTimer',{
+  'size': [500, 20],
+  'mode': 'toggle',
+  'rows': 1,
+  'columns': 8
+ })
+ sequencerTimer.colorize("fill","#d1d3d6")
+
 //const scale = ["C4", "B3", "A3", "G3", "F3",  "A3", "A#3", "B3", "C4"]
 var vol = new Tone.Volume(-30);
 const verb = new Tone.Freeverb(0.25)
@@ -407,7 +415,21 @@ cellNum = 0
   cellNum = 0;
  }
 })
+var numCell = 0;
+let toneMet;
+ sequencerTimer.matrix.set.all([[0, 0, 0, 0, 0, 0, 0, 0]])
+numCell = 0
+ toneMet = new Nexus.Interval((60000/Tone.Transport.bpm.value), function(time) {
+   if (numCell === 0) sequencerTimer.matrix.set.all([[0, 0, 0, 0, 0, 0, 0, 0]])
+ sequencerTimer.matrix.toggle.cell(numCell,0)
+ numCell++
+ if (numCell === 8) {
+  numCell = 0;
+ }
+})
+
 initMet.start()
+toneMet.start()
 var select = new Nexus.Select('#presets',{
   'size': [100,30],
   'options': ['FMSynth','DuoSynth', 'BluSynth', 'MonoSynth', 'AMSynth']
@@ -596,6 +618,7 @@ const initSeq = function(v){
   }, octPattern);
 textbuttonPlay.on('change',function(v) {
   cellNum = 0;
+  numCell = 0;
   //drumSequencerTimer.matrix.toggle.cell(0,0)
 
 
@@ -634,9 +657,6 @@ textbuttonStop.on('change',function(v) {
   arpmaj6.stop();
   arpmaj7.stop();
   arpoct.stop();
-  Tone.Transport.cancel();
-  Tone.Transport.clear(initMet);
-  Tone.Transport.off();
   Tone.Transport.stop();
   softhat.removeAll();
   softsnare.removeAll();

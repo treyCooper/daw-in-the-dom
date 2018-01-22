@@ -158,8 +158,8 @@ input[type=checkbox]:checked ~ aside {
 .clip p {
   cursor: pointer;
 }
-#seq, #synthRack {
-  margin-top: 10px;
+ #synthRack {
+  margin-top: 45px;
 }
 
 #button-container {
