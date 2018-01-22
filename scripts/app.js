@@ -334,9 +334,9 @@ console.log('seq', sequencer)
 
 
 //const scale = ["C4", "B3", "A3", "G3", "F3",  "A3", "A#3", "B3", "C4"]
-var vol = new Tone.Volume(-15);
+var vol = new Tone.Volume(-30);
 const verb = new Tone.Freeverb(0.25).connect(Tone.Master);
-const seqDelay = new Tone.FeedbackDelay("8n", 0.2);
+const seqDelay = new Tone.FeedbackDelay(0.2,0.2)
 var filter = new Tone.Filter(5000, "lowpass");
 //let synthPreset = Tone.FMSynth
 
@@ -347,7 +347,23 @@ var synthTone = new Tone.PolySynth(8, Tone.FMSynth)
 let controls = new Nexus.Rack("#synthRack")
 
 controls.colorize("fill","#d1d3d6")
+let volumeSlider = new Nexus.Slider("#volume", {
+  'min': -60,
+  'max': 5,
+  'step': 1,
+  'value': -15
+})
+controls.freq.value = 0.25
+controls.reverb.value = 0.25
+controls.delay.value = 0.5
 
+volumeSlider.colorize("fill","#d1d3d6")
+volumeSlider.on('change', function(v){
+  volume.volume.cancelScheduledValues();
+  vol.volume.rampTo(volumeSlider.value)
+  console.log(vol)
+  // synthTone.chain( vol, filter, verb, seqDelay, Tone.Master)
+})
 
 var select = new Nexus.Select('#presets',{
   'size': [100,30],
@@ -376,7 +392,6 @@ var bpm = new Nexus.Slider('#bpm', {
 
 bpm.on('change', function(v){
   Tone.Transport.bpm.value = bpm.value
-  console.log('bpm', bpm.value)
 })
 bpm.colorize("fill","#d1d3d6")
 
