@@ -366,6 +366,22 @@ select.on('change',function(v) {
   }
   else if (select.value === 'AMSynth') synthTone = new Tone.PolySynth(8, Tone.AMSynth)
 })
+
+var bpm = new Nexus.Slider('#bpm', {
+  'min': 50,
+  'max': 300,
+  'step': 1,
+  'value': 140
+})
+
+bpm.on('change', function(v){
+  Tone.Transport.bpm.value = bpm.value
+  console.log('bpm', bpm.value)
+})
+bpm.colorize("fill","#d1d3d6")
+
+
+
 const initSeq = function(v){
     var rootPattern = sequencer.matrix.pattern[7].map(function(index) {
     return index ? "C3" : " ";
