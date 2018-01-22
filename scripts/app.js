@@ -349,11 +349,7 @@ var sequencer = new Nexus.Sequencer('#seq',{
   'columns': 16
  })
  drumSequencerTimer.colorize("fill","#d1d3d6")
- drumSequencerTimer.matrix.toggle.cell(0,0)
 
- drumSequencerTimer.matrix.toggle.cell(4,0)
- drumSequencerTimer.matrix.toggle.cell(8,0)
- drumSequencerTimer.matrix.toggle.cell(12,0)
 //const scale = ["C4", "B3", "A3", "G3", "F3",  "A3", "A#3", "B3", "C4"]
 var vol = new Tone.Volume(-30);
 const verb = new Tone.Freeverb(0.25)
@@ -399,7 +395,19 @@ volumeSlider.colorize("fill","#d1d3d6")
 volumeSlider.on('change', function(v){
   vol.volume.rampTo(volumeSlider.value)
 })
-
+var cellNum = 0;
+let initMet;
+ drumSequencerTimer.matrix.set.all([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+cellNum = 0
+ initMet = new Nexus.Interval((60000/Tone.Transport.bpm.value)/2, function(time) {
+   if (cellNum === 0) drumSequencerTimer.matrix.set.all([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+ drumSequencerTimer.matrix.toggle.cell(cellNum,0)
+ cellNum++
+ if (cellNum === 16) {
+  cellNum = 0;
+ }
+})
+initMet.start()
 var select = new Nexus.Select('#presets',{
   'size': [100,30],
   'options': ['FMSynth','DuoSynth', 'BluSynth', 'MonoSynth', 'AMSynth']
@@ -426,6 +434,7 @@ var bpm = new Nexus.Slider('#bpm', {
 
 bpm.on('change', function(v){
   Tone.Transport.bpm.value = bpm.value
+  initMet.ms((60000/bpm.value)/2)
 })
 bpm.colorize("fill","#d1d3d6")
 var number = new Nexus.Number('#number')
@@ -449,7 +458,12 @@ var numOct = new Nexus.Number('#numOct')
 
 numOct.link(oct)
 numOct.colorize("fill","#d1d3d6")
+
+
 const initSeq = function(v){
+
+  //drumSequencerTimer.matrix.toggle.all()
+
 
   let hatSound = DRUMS.get("hat")
   var hatPattern = drumSequencer.matrix.pattern[0].map(function(index) {
@@ -580,11 +594,14 @@ const initSeq = function(v){
     synthTone.triggerAttackRelease(pitch, "4n", time);
     }
   }, octPattern);
-
 textbuttonPlay.on('change',function(v) {
-
+  cellNum = 0;
   //drumSequencerTimer.matrix.toggle.cell(0,0)
+
+
 Tone.Transport.start();
+
+
   hat.start();
   softhat.start();
 
@@ -601,9 +618,8 @@ Tone.Transport.start();
   arpmaj7.start();
   arpoct.start()
 })
-
 textbuttonStop.on('change',function(v) {
-
+  //clearTimeout(intTime);
   hat.stop();
   softhat.stop();
   softsnare.stop();
@@ -617,8 +633,11 @@ textbuttonStop.on('change',function(v) {
   arpp5.stop();
   arpmaj6.stop();
   arpmaj7.stop();
-  arpoct.stop()
-  Tone.Transport.stop()
+  arpoct.stop();
+  Tone.Transport.cancel();
+  Tone.Transport.clear(initMet);
+  Tone.Transport.off();
+  Tone.Transport.stop();
   softhat.removeAll();
   softsnare.removeAll();
   hat.removeAll();
@@ -687,6 +706,8 @@ power.on('change',function(v) {
   enableMic.disabled = false;
 })
 
+
+// console.log((Tone.Transport.bpm.value))
 
 //DRUM MACHINE
 
