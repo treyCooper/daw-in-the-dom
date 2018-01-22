@@ -335,8 +335,8 @@ console.log('seq', sequencer)
 
 //const scale = ["C4", "B3", "A3", "G3", "F3",  "A3", "A#3", "B3", "C4"]
 var vol = new Tone.Volume(-30);
-const verb = new Tone.Freeverb(0.25).connect(Tone.Master);
-const seqDelay = new Tone.FeedbackDelay(0.2,0.7)
+const verb = new Tone.Freeverb(0.25)
+const seqDelay = new Tone.FeedbackDelay(0.2,0.5)
 var filter = new Tone.Filter(5000, "lowpass");
 //let synthPreset = Tone.FMSynth
 
@@ -355,9 +355,14 @@ let volumeSlider = new Nexus.Slider("#volume", {
 })
 controls.freq.value = 0.25
 controls.reverb.value = 0.25
-controls.delay.value = 0.5
+controls.reverb.min = 0;
+controls.reverb.max = 0.9;
+controls.reverb.on('change',function(value) {
+	verb.roomSize.value = value;
+})
+controls.delay.value = 0.25
 controls.delay.min = 0;
-controls.delay.max = 0.8;
+controls.delay.max = 0.9;
 controls.delay.on('change',function(value) {
 	seqDelay.wet.value = value;
 })
