@@ -11,6 +11,8 @@ var pauseAll = document.querySelector('#pauseAll');
 var synthMode = false;
 var micStream;
 var waveArr = [];
+var blobArr = [];
+var urlArr = [];
 // disable stop button while not recording
 
 stop.disabled = true;
@@ -90,7 +92,7 @@ if (navigator.mediaDevices.getUserMedia) {
       var clipName = prompt('Enter a name for your sound clip?','My unnamed clip');
       console.log(clipName);
       var clipContainer = document.createElement('article');
-      var clipLabel = document.createElement('p');
+      var clipLabel = document.createElement('a');
       var audio = document.createElement('audio');
       var deleteButton = document.createElement('button');
 
@@ -110,11 +112,19 @@ if (navigator.mediaDevices.getUserMedia) {
       clipContainer.appendChild(deleteButton);
       soundClips.appendChild(clipContainer);
 
+
+
       audio.controls = true;
+      console.log(waveArr, 'audiocontrols')
       var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
       chunks = [];
+      blobArr.push(blob)
       var audioURL = window.URL.createObjectURL(blob);
       audio.src = audioURL;
+      clipLabel.setAttribute("href", audio.src)
+      clipLabel.setAttribute("download", clipName)
+
+      console.log(urlArr, 'url')
       console.log("recorder stopped");
 
       deleteButton.onclick = function(e) {
@@ -145,7 +155,6 @@ if (navigator.mediaDevices.getUserMedia) {
     waveformTimeline.appendChild(waveform);
   var tracksArr = document.querySelectorAll('audio');
   wavesurfer.load(tracksArr[tracksArr.length-1].src);
-    console.log('wavesurfer', wavesurfer, "trackslength", tracksArr.length-1);
   wavesurfer.on('ready', function () {
     var timeline = Object.create(WaveSurfer.Timeline);
       timeline.init({
@@ -242,7 +251,6 @@ window.onresize = function() {
 window.onresize();
 
 playAll.onclick = function() {
-console.log("WA", waveArr);
   for (var i = 0; i < waveArr.length; i++){
     waveArr[i].setMute(false);
   }
@@ -324,25 +332,38 @@ var sequencer = new Nexus.Sequencer('#seq',{
   'rows': 8,
   'columns': 8
  })
- sequencer.colorize("accent","#ff0")
- sequencer.colorize("fill","#111")
-// var tone = document.querySelector("#tone");
-// tone.appendChild(textbutton);
-//sequencer.matrix.set.cell(0, 0, 1);
-console.log('seq', sequencer)
+ sequencer.colorize("fill","#d1d3d6")
 
+ var drumSequencer = new Nexus.Sequencer('#drumSeq',{
+  'size': [1000, 300],
+  'mode': 'toggle',
+  'rows': 5,
+  'columns': 16
+ })
+ drumSequencer.colorize("fill","#d1d3d6")
 
+ var drumSequencerTimer = new Nexus.Sequencer('#drumSeqTimer',{
+  'size': [1000, 20],
+  'mode': 'toggle',
+  'rows': 1,
+  'columns': 16
+ })
+ drumSequencerTimer.colorize("fill","#d1d3d6")
+ drumSequencerTimer.matrix.toggle.cell(0,0)
 
+ drumSequencerTimer.matrix.toggle.cell(4,0)
+ drumSequencerTimer.matrix.toggle.cell(8,0)
+ drumSequencerTimer.matrix.toggle.cell(12,0)
 //const scale = ["C4", "B3", "A3", "G3", "F3",  "A3", "A#3", "B3", "C4"]
 var vol = new Tone.Volume(-30);
 const verb = new Tone.Freeverb(0.25)
-const seqDelay = new Tone.FeedbackDelay(0.2,0.5)
+const seqDelay = new Tone.FeedbackDelay(0.1,0.5)
 var filter = new Tone.Filter(5000, "lowpass");
 //let synthPreset = Tone.FMSynth
 let octave = 3;
 let octNote = octave + 1;
 var synthTone = new Tone.PolySynth(8, Tone.FMSynth)
-
+seqDelay.wet.value = 0.03
 //CONTROLS
 
 let controls = new Nexus.Rack("#synthRack")
@@ -367,11 +388,12 @@ controls.reverb.max = 0.9;
 controls.reverb.on('change',function(value) {
 	verb.roomSize.value = value;
 })
-controls.delay.value = 0.1
+controls.delay.value = 0.03
 controls.delay.min = 0;
 controls.delay.max = 0.9;
 controls.delay.on('change',function(value) {
-	seqDelay.wet.value = value;
+  seqDelay.wet.value = value;
+  console.log('value', value)
 })
 volumeSlider.colorize("fill","#d1d3d6")
 volumeSlider.on('change', function(v){
@@ -384,7 +406,6 @@ var select = new Nexus.Select('#presets',{
 })
 select.colorize("fill","#d1d3d6")
 select.on('change',function(v) {
-  console.log('select', select.value)
   if (select.value === 'DuoSynth') synthTone = new Tone.PolySynth(8, Tone.DuoSynth)
   else if (select.value === 'FMSynth') synthTone = new Tone.PolySynth(8, Tone.FMSynth)
   else if (select.value === 'BluSynth') {
@@ -428,11 +449,59 @@ var numOct = new Nexus.Number('#numOct')
 
 numOct.link(oct)
 numOct.colorize("fill","#d1d3d6")
-
 const initSeq = function(v){
+
+  let hatSound = DRUMS.get("hat")
+  var hatPattern = drumSequencer.matrix.pattern[0].map(function(index) {
+    return index ? "C" : " ";
+  })
+ var hat = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+      hatSound.start()
+    }
+  }, hatPattern, "8n");
+  let softhatSound = SOFTHAT.get("hat")
+  var softhatPattern = drumSequencer.matrix.pattern[1].map(function(index) {
+    return index ? "C" : " ";
+  })
+ var softhat = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+      softhatSound.start()
+    }
+  }, softhatPattern, "8n");
+
+  let softsnareSound = SOFTHAT.get("snare")
+  var softsnarePattern = drumSequencer.matrix.pattern[2].map(function(index) {
+    return index ? "C" : " ";
+  })
+ var softsnare = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+      softsnareSound.start()
+    }
+  }, softsnarePattern, "8n");
+
+  var snarePattern = drumSequencer.matrix.pattern[3].map(function(index) {
+    return index ? "C" : " ";
+  })
+ var snare = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+      DRUMS.get("snare").start()
+    }
+  }, snarePattern, "8n");
+
+  var kickPattern = drumSequencer.matrix.pattern[4].map(function(index) {
+    return index ? "C" : " ";
+  })
+ var kick = new Tone.Sequence(function(time, pitch) {
+    if(pitch !== " ") {
+      DRUMS.get("kick").start()
+    }
+  }, kickPattern, "8n");
+
     var rootPattern = sequencer.matrix.pattern[7].map(function(index) {
     return index ? "C"+octave+"" : " ";
   })
+
  arp = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {
     synthTone.triggerAttackRelease(pitch, "4n", time);
@@ -513,7 +582,15 @@ const initSeq = function(v){
   }, octPattern);
 
 textbuttonPlay.on('change',function(v) {
+
+  //drumSequencerTimer.matrix.toggle.cell(0,0)
 Tone.Transport.start();
+  hat.start();
+  softhat.start();
+
+  softsnare.start();
+  snare.start();
+  kick.start();
   arp.start();
   arpMaj2.start();
   arpMaj3.start();
@@ -526,6 +603,12 @@ Tone.Transport.start();
 })
 
 textbuttonStop.on('change',function(v) {
+
+  hat.stop();
+  softhat.stop();
+  softsnare.stop();
+  snare.stop();
+  kick.stop();
   arp.stop();
   arpMaj2.stop();
   arpMaj3.stop();
@@ -536,6 +619,11 @@ textbuttonStop.on('change',function(v) {
   arpmaj7.stop();
   arpoct.stop()
   Tone.Transport.stop()
+  softhat.removeAll();
+  softsnare.removeAll();
+  hat.removeAll();
+  snare.removeAll();
+  kick.removeAll();
   arp.removeAll();
   arpMaj2.removeAll();
   arpMaj3.removeAll();
@@ -554,10 +642,10 @@ initButton.on('change', function(v) {
           initSeq();
 })
 
-textbuttonPause.colorize("fill","#ff0")
-textbuttonPlay.colorize("fill","#ff0")
-textbuttonStop.colorize("fill","#ff0")
-initButton.colorize("fill","#ff0")
+textbuttonPause.colorize("fill","#2bb")
+textbuttonPlay.colorize("fill","#2bb")
+textbuttonStop.colorize("fill","#2bb")
+initButton.colorize("fill","#2bb")
 
 
  /* SLIDERS */
@@ -600,6 +688,126 @@ power.on('change',function(v) {
 })
 
 
+//DRUM MACHINE
+
+var DRUMS = new Tone.Players({
+  "hat" : "../CR78/hihat.[aif|wav]",
+  "snare" : "../CR78/snare.[aif|wav]",
+  "kick" : "../CR78/kick.[aif|wav]"
+}, {
+  "volume" : -10
+}).toMaster();
+
+var SOFTHAT =  new Tone.Players({
+
+    "hat" : "../CR78/hihat.[aif|wav]",
+
+    "snare" : "../CR78/snare.[aif|wav]"},{
+      "volume" : 10
+    }
+    ).chain( vol, filter, verb, seqDelay, Tone.Master);
 
 
+  //   var div = document.querySelector("#download");
+
+  //   function handleFilesSelect(input) {
+  //     div.innerHTML = "loading audio tracks.. please wait";
+  //     var files = input
+  //     var duration = 60000;
+  //     var chunks = [];
+  //     var audio = new AudioContext();
+  //     var mixedAudio = audio.createMediaStreamDestination();
+  //     var player = new Audio();
+  //     var context;
+  //     var recorder;
+  //     var description = "";
+
+  //     player.controls = "controls";
+
+  //     function get(file) {
+  //       return new Promise(function(resolve, reject) {
+  //         var reader = new FileReader;
+  //         reader.readAsArrayBuffer(file);
+  //         reader.onload = function() {
+  //           resolve(reader.result)
+  //         }
+  //       })
+  //     }
+
+  //     function stopMix(duration, ...media) {
+  //       setTimeout(function(media) {
+  //         media.forEach(function(node) {
+  //           node.stop()
+  //         })
+  //       }, duration, media)
+  //     }
+
+  //     Promise.all(files.map(get)).then(function(data) {
+  //         var len = Math.max.apply(Math, data.map(function(buffer) {
+  //           return buffer.byteLength
+  //         }));
+  //         context = new OfflineAudioContext(2, len, 44100);
+  //         return Promise.all(data.map(function(buffer) {
+  //             return audio.decodeAudioData(buffer)
+  //               .then(function(bufferSource) {
+  //                 var source = context.createBufferSource();
+  //                 source.buffer = bufferSource;
+  //                 source.connect(context.destination);
+  //                 return source.start()
+  //               })
+  //           }))
+  //           .then(function() {
+  //             return context.startRendering()
+  //           })
+  //           .then(function(renderedBuffer) {
+  //             return new Promise(function(resolve) {
+  //               var mix = audio.createBufferSource();
+  //               mix.buffer = renderedBuffer;
+  //               mix.connect(audio.destination);
+  //               mix.connect(mixedAudio);
+  //               recorder = new MediaRecorder(mixedAudio.stream);
+  //               recorder.start(0);
+  //               mix.start(0);
+  //               div.innerHTML = "playing and recording tracks..";
+  //               // stop playback and recorder in 60 seconds
+  //               stopMix(duration, mix, recorder)
+
+  //               recorder.ondataavailable = function(event) {
+  //                 chunks.push(event.data);
+  //               };
+
+  //               recorder.onstop = function(event) {
+  //                 var blob = new Blob(chunks, {
+  //                   "type": "audio/ogg; codecs=opus"
+  //                 });
+  //                 console.log("recording complete");
+  //                 resolve(blob)
+  //               };
+  //             })
+  //           })
+  //           .then(function(blob) {
+  //             console.log(blob);
+  //             div.innerHTML = "mixed audio tracks ready for download..";
+  //             var audioDownload = URL.createObjectURL(blob);
+  //             var a = document.createElement("a");
+  //             a.download = description + "." + blob.type.replace(/.+\/|;.+/g, "");
+  //             a.href = audioDownload;
+  //             a.innerHTML = a.download;
+  //             document.body.appendChild(a);
+  //             a.insertAdjacentHTML("afterend", "<br>");
+  //             player.src = audioDownload;
+  //             document.body.appendChild(player);
+  //           })
+  //       })
+  //       .catch(function(e) {
+  //         console.log(e)
+  //       });
+
+  //   }
+
+  // let  downloadBtn = document.querySelector("#downloadBtn")
+
+  // downloadBtn.onclick = function() {
+  //   handleFilesSelect(blobArr);
+  // }
 

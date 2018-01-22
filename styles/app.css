@@ -159,7 +159,7 @@ input[type=checkbox]:checked ~ aside {
   cursor: pointer;
 }
 #seq, #synthRack {
-  margin-top: 50px;
+  margin-top: 10px;
 }
 
 #button-container {
@@ -169,6 +169,8 @@ input[type=checkbox]:checked ~ aside {
   height: 200px;
   width: 500px;
   padding: 10px 0;
+
+  margin-top: 40px;
 }
 
 #play-tone {
@@ -191,6 +193,16 @@ input[type=checkbox]:checked ~ aside {
   color: #2bb
 }
 
+#drumHeader{
+
+  margin-top: 50px;
+  margin-bottom: 5px;
+}
+
+#tonesHeader{
+
+  margin-bottom: 5px;
+}
 #bpmText {
   padding: 5px;
 }
@@ -210,6 +222,9 @@ input[type=checkbox]:checked ~ aside {
   height: 600px;
 }
 
+.wrapper header {
+  margin-top: 30px;
+}
 #synth, #synth-container {
   width: 50%;
 }

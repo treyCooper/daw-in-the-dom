@@ -2,13 +2,14 @@
   "name": "daw-in-the-dom",
   "version": "1.0.0",
   "description": "music recording in the browser",
-  "main": "app.js",
+  "main": "scripts/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Trey Cooper",
   "license": "ISC",
   "dependencies": {
+    "http-server": "^0.11.1",
     "nexusui": "^2.0.2"
   }
 }
