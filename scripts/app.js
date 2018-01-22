@@ -338,6 +338,7 @@ var vol = new Tone.Volume(-15);
 const verb = new Tone.Freeverb(0.25).connect(Tone.Master);
 const seqDelay = new Tone.FeedbackDelay("8n", 0.2);
 var filter = new Tone.Filter(5000, "lowpass");
+//let synthPreset = Tone.FMSynth
 
 var synthTone = new Tone.PolySynth(8, Tone.FMSynth)
 
@@ -347,6 +348,24 @@ let controls = new Nexus.Rack("#synthRack")
 
 controls.colorize("fill","#d1d3d6")
 
+
+var select = new Nexus.Select('#presets',{
+  'size': [100,30],
+  'options': ['FMSynth','DuoSynth', 'BluSynth', 'MonoSynth', 'AMSynth']
+})
+select.colorize("fill","#d1d3d6")
+select.on('change',function(v) {
+  console.log('select', select.value)
+  if (select.value === 'DuoSynth') synthTone = new Tone.PolySynth(8, Tone.DuoSynth)
+  else if (select.value === 'FMSynth') synthTone = new Tone.PolySynth(8, Tone.FMSynth)
+  else if (select.value === 'BluSynth') {
+    synthTone = new Tone.PolySynth(8, Tone.Synth)
+  }
+  else if (select.value === 'MonoSynth') {
+    synthTone = new Tone.PolySynth(8, Tone.MonoSynth)
+  }
+  else if (select.value === 'AMSynth') synthTone = new Tone.PolySynth(8, Tone.AMSynth)
+})
 const initSeq = function(v){
     var rootPattern = sequencer.matrix.pattern[7].map(function(index) {
     return index ? "C3" : " ";
