@@ -339,7 +339,8 @@ const verb = new Tone.Freeverb(0.25)
 const seqDelay = new Tone.FeedbackDelay(0.2,0.5)
 var filter = new Tone.Filter(5000, "lowpass");
 //let synthPreset = Tone.FMSynth
-
+let octave = 3;
+let octNote = octave + 1;
 var synthTone = new Tone.PolySynth(8, Tone.FMSynth)
 
 //CONTROLS
@@ -353,14 +354,20 @@ let volumeSlider = new Nexus.Slider("#volume", {
   'step': 1,
   'value': -15
 })
-controls.freq.value = 0.25
+
+controls.freq.min = 0;
+controls.freq.max = 10000;
+controls.freq.value = 5000
+controls.freq.on('change',function(value) {
+  filter.frequency.value = value;
+})
 controls.reverb.value = 0.25
 controls.reverb.min = 0;
 controls.reverb.max = 0.9;
 controls.reverb.on('change',function(value) {
 	verb.roomSize.value = value;
 })
-controls.delay.value = 0.25
+controls.delay.value = 0.1
 controls.delay.min = 0;
 controls.delay.max = 0.9;
 controls.delay.on('change',function(value) {
@@ -370,8 +377,6 @@ volumeSlider.colorize("fill","#d1d3d6")
 volumeSlider.on('change', function(v){
   volume.volume.cancelScheduledValues();
   vol.volume.rampTo(volumeSlider.value)
-  console.log(vol)
-  // synthTone.chain( vol, filter, verb, seqDelay, Tone.Master)
 })
 
 var select = new Nexus.Select('#presets',{
@@ -403,12 +408,31 @@ bpm.on('change', function(v){
   Tone.Transport.bpm.value = bpm.value
 })
 bpm.colorize("fill","#d1d3d6")
+var number = new Nexus.Number('#number')
 
+number.link(bpm)
+number.colorize("fill","#d1d3d6")
 
+var oct = new Nexus.Slider('#oct', {
+  'min': 0,
+  'max': 7,
+  'step': 1,
+  'value': 3
+})
+
+oct.on('change', function(v){
+  octave = oct.value
+  octNote = oct.value + 1
+})
+oct.colorize("fill","#d1d3d6")
+var numOct = new Nexus.Number('#numOct')
+
+numOct.link(oct)
+numOct.colorize("fill","#d1d3d6")
 
 const initSeq = function(v){
     var rootPattern = sequencer.matrix.pattern[7].map(function(index) {
-    return index ? "C3" : " ";
+    return index ? "C"+octave+"" : " ";
   })
  arp = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {
@@ -421,7 +445,7 @@ const initSeq = function(v){
 
 
     var Maj2Pattern = sequencer.matrix.pattern[6].map(function(index) {
-    return index ? "D3" : " ";
+    return index ? "D"+octave+"" : " ";
   })
   var arpMaj2 = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {
@@ -431,7 +455,7 @@ const initSeq = function(v){
 
 
   var maj3Pattern = sequencer.matrix.pattern[5].map(function(index) {
-    return index ? "E3" : " ";
+    return index ? "E"+octave+"" : " ";
   })
   var arpMaj3 = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {
@@ -443,7 +467,7 @@ const initSeq = function(v){
 
 
   var p4Pattern = sequencer.matrix.pattern[4].map(function(index) {
-    return index ? "F3" : " ";
+    return index ? "F"+octave+"" : " ";
   })
   var arpp4 = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {
@@ -452,7 +476,7 @@ const initSeq = function(v){
   }, p4Pattern);
 
   var p5Pattern = sequencer.matrix.pattern[3].map(function(index) {
-    return index ? "G3" : " ";
+    return index ? "G"+octave+"" : " ";
   })
   var arpp5 = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {
@@ -462,7 +486,7 @@ const initSeq = function(v){
 
 
   var maj6Pattern = sequencer.matrix.pattern[2].map(function(index) {
-    return index ? "A3" : " ";
+    return index ? "A"+octave+"" : " ";
   })
   var arpmaj6 = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {
@@ -472,7 +496,7 @@ const initSeq = function(v){
 
 
   var maj7Pattern = sequencer.matrix.pattern[1].map(function(index) {
-    return index ? "B3" : " ";
+    return index ? "B"+octave+"" : " ";
   })
   var arpmaj7 = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {
@@ -481,7 +505,7 @@ const initSeq = function(v){
   }, maj7Pattern);
 
   var octPattern = sequencer.matrix.pattern[0].map(function(index) {
-    return index ? "C4" : " ";
+    return index ? "C"+octNote+"" : " ";
   })
   var arpoct = new Tone.Sequence(function(time, pitch) {
     if(pitch !== " ") {

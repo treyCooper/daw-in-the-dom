@@ -183,11 +183,17 @@ input[type=checkbox]:checked ~ aside {
   width: 600px
 }
 
+#number, #numOct {
+  width: 40px;
+}
 .text {
   padding: 5px 15px;
   color: #2bb
 }
 
+#bpmText {
+  padding: 5px;
+}
 #presets {
   margin-bottom: 7px;
 }
